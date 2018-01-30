@@ -1,0 +1,47 @@
+{
+    "family": "financetaskdef",
+    "containerDefinitions":[
+          {
+            "name": "app-container",
+            "image": "%REPOSITORY_URI%:latest",
+            "cpu": 1,
+            "memory": 500,
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080
+                }
+             ],
+            "links": [
+                 "mysqlcontainer"
+             ],
+            "mountPoints":[]
+          },
+          {
+            "name": "mysqlcontainer",
+            "image": "%REPOSITORY_URI%:latest",
+            "cpu": 0,
+            "memory": 500,
+            "essential": true,
+            "portMappings": [
+                {
+                    "containerPort": 3306,
+                    "hostPort": 3306
+                 }
+             ],
+             "mountPoints": [
+                {
+                    "containerPath": "/var/lib/mysql/",
+                    "sourceVolume": "database"
+                 }
+             ]
+          }
+      ],
+      "volumes": [
+         {
+           "name": "database"
+         }
+     ]
+
+}

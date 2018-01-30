@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+  - source: /target/finance.war
+    destination: /var/lib/tomcat8/webapps/
+hooks:
+  ApplicationStop:
+    - location: scripts/stop_application.sh
+      timeout: 300
+  BeforeInstall:
+    - location: scripts/cleanOldFiles.sh
+      timeout: 300
+  ApplicationStart:
+    - location: scripts/start_application.sh 
+      timeout: 300

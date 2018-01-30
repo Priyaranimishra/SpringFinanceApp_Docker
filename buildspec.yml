@@ -1,0 +1,35 @@
+version: 0.2
+phases: 
+  build: 
+    commands: 
+      - "mvn package"
+      - "ls target/"
+      - "java -fullversion"
+      - "docker build --tag \"${REPOSITORY_APP}:latest\" ."
+      - "docker build -f MysqlDockerfile.df --tag \"${REPOSITORY_MYSQL}:latest\" ."
+  post_build: 
+    commands: 
+      - "docker push \"${REPOSITORY_APP}:latest\""
+      - "docker push \"${REPOSITORY_MYSQL}:latest\""
+      - "echo Writing image definitions file..."
+      - "printf '[{\"name\":\"app-container\",\"imageUri\":\"%s\"}]' $REPOSITORY_APP:latest >> imagedefinitions.json"
+      - "printf '[{\"name\":\"mysqlcontainer\",\"imageUri\":\"%s\"}]' $REPOSITORY_MYSQL:latest >> imagedefinitions.json"
+      - ls
+      - pwd
+  pre_build: 
+    commands: 
+      - "apt-get update"
+      - "apt-get install awscli -y"
+      - "$(aws ecr get-login --no-include-email --region us-east-1)"
+      - "apt-get update && apt-get install wget -y"  
+      - "echo Entering install phase..."
+      - "wget \"http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/jdk-8u161-linux-x64.tar.gz\" --no-cookies --header \"Cookie: oraclelicense=accept-securebackup-cookie\" -P /usr/"
+      - "tar -xvzf /usr/jdk-8u161-linux-x64.tar.gz -C /usr/"
+      - "ln -s /usr/jdk1.8.0_161/bin/java /usr/bin/java"
+      - "ln -s /usr/jdk1.8.0_161/bin/javac /usr/bin/javac"
+      - "java -fullversion"
+      - "ls"
+      - "apt-get install -y maven"
+artifacts: 
+  files: 
+    - imagedefinitions.json

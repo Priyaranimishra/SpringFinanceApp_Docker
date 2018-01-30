@@ -1,0 +1,28 @@
+version: '3'
+services:
+  app:
+    image:  priyarani94/app-finance
+    ports:
+     - "8070:8080"
+    links:
+     - db
+    networks:
+     - connector
+
+  db:
+    image:  priyarani94/mysql-finance
+    ports:
+     - "3306:3306"
+    container_name: myqsl_db
+    environment:
+       MYSQL_ROOT_PASSWORD: admin
+    volumes:
+     - database:/var/lib/mysql
+    networks:
+     - connector
+networks:
+  connector: {}
+
+volumes:
+  database: {}
+
